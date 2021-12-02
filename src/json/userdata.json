@@ -1,0 +1,65 @@
+{
+    "login" : "penitrator",
+    "name"     : "Николай",
+    "scoreXP"  : "0",
+    "score"    : "0",
+    "status"   : "younger",
+    "avatar"   : "penitrator2000",
+    "tasks" :
+    {
+        "personal" : 
+        {
+            "title" : 
+            {
+                "0" : "Task-1",
+                "1" : "Task-2",
+                "2" : "Task-3"
+            },
+            "descr" :
+            {
+                "0" : "Something Task-1",
+                "1" : "Something Task-2",
+                "2" : "Something Task-3"
+            },
+            "status" :
+            {
+                "0" : "0",
+                "1" : "0",
+                "2" : "0"
+            },
+            "pas" :
+            {
+                "0" : "12",
+                "1" : "123",
+                "2" : "1234"
+            }
+        },
+        "common" : 
+        {
+            "title" : 
+            {
+                "0" : "Task-1",
+                "1" : "Task-2",
+                "2" : "Task-3"
+            },
+            "descr" :
+            {
+                "0" : "Something Task-1",
+                "1" : "Something Task-2",
+                "2" : "Something Task-3"
+            },
+            "status" :
+            {
+                "0" : "0",
+                "1" : "0",
+                "2" : "0"
+            },
+            "pas" :
+            {
+                "0" : "1234",
+                "1" : "123",
+                "2" : "12"
+            }
+        }
+    }
+}

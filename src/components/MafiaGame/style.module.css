@@ -1,0 +1,132 @@
+
+.mafia {
+    width: 100%;
+    height: 100%;
+}
+
+.box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.changeCardBlock {
+    margin-top: 2%;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+}
+
+.changeCardButton {
+    padding: 5px;
+    width: 30%;
+    border-radius: 10px;
+    margin: 0 auto;
+    text-align: center;
+    background: red;
+    font-size: 20px;
+    color: white;
+}
+
+
+
+.cardWrapeer {
+    position: relative;  
+    background-color: inherit;
+    width: 100%;
+    height: 500px;
+    transition: all .2s ease-out;
+}
+
+.cardHidden {
+    width: 20%;
+    height: 95px;
+}
+
+.cardContainer {
+    position: absolute;
+    width: 80%;
+    height: 90%;
+    max-height: 90%;
+    right: 10%;
+    top: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 300px;
+    height: 100%;
+    position: relative;
+    perspective: 1000px;
+}
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 2s;
+    backface-visibility: hidden;
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.front{
+    max-width: 100%;
+    min-width: 100%;
+    /*height: auto*/
+}
+.back {
+    transform: rotateY(180deg);
+    overflow: hidden
+}
+
+.mafiaImg {
+    height: 100%;
+    width: 100%;
+}
+
+.mafiaImg img {
+    height: 100%;
+    width: 100%;
+    border-radius: 15px;
+}
+
+
+.active .front {
+    transform: rotateY(180deg);
+}
+
+.active .back {
+    transform: rotateY(360deg);
+}
+
+
+
+.backImg {
+    background: url('../../assets/img/mafia.png') center center/cover no-repeat;
+    /*height: 60%;*/
+    height: 60%;
+    width: 60%;
+
+}
+
+.descr {
+    font-size: 20px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+
+.gameBox {
+    width: 100%;
+    height: 100px;
+    outline: 1px solid red;
+    padding: 10px;
+}

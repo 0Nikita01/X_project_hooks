@@ -1,0 +1,48 @@
+.queen {
+    background: url('../../assets/img/sabina_img.jpg') center center/cover no-repeat;
+}
+
+.bitmaker {
+    background: url('../../assets/img/marat_img.jpg') center center/cover no-repeat;
+}
+
+.penitrator2000 {
+	background: url('../../assets/img/nikolay_img.jpg') center 20%/cover no-repeat;
+}
+
+.less40 {
+    background:#c22d28;
+}
+
+.less40b {
+    border:2px solid #c22d28;
+}
+
+.beetwen4060 {
+    background:#db880b;
+}
+
+.beetwen4060b {
+    border:2px solid#db880b;
+}
+
+.beetwen6090 {
+    background:#93ca13;
+}
+
+.beetwen6090b {
+    border:2px solid #93ca13;
+}
+
+.more90 {
+    background:#4df08b;
+}
+
+.more90b {
+    border:2px solid #4df08b;
+}
+
+.progress {
+    transition: width 2s linear;
+    transition-delay: 1s;
+}

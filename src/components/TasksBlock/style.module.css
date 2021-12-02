@@ -1,0 +1,13 @@
+.lock {
+    /*background: rgba(150, 150, 150, .6);*/
+    border-radius: 6px;
+    /*margin-bottom: 10px;*/
+    opacity: 0.5;
+}
+
+.inprogress {
+    border: 2px solid rgba(77, 240, 139, 0.5);
+    border-radius: 6px;
+    /*margin-bottom: 10px;*/
+}
+

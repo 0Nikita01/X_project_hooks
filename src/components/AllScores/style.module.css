@@ -1,0 +1,79 @@
+/*.allScores__users_user:first-child ul li:first-child{
+    background:url(./assets/img/marat_img.jpg) center center/cover no-repeat;
+}
+.allScores__users_user:nth-child(2) ul li:first-child{
+    background:url(./assets/img/developer_img.jpg) 20% center/cover no-repeat
+}
+.allScores__users_user:nth-child(3) ul li:first-child{
+    background:url(./assets/img/nikolay_img.jpg) center 20%/cover no-repeat
+}
+.allScores__users_user:nth-child(4) ul li:first-child{
+    background:url(./assets/img/emil_img.jpg) center 5%/cover no-repeat
+}
+.allScores__users_user:nth-child(5) ul li:first-child{
+    background:url(./assets/img/dasha_img.jpg) center 60%/cover no-repeat;
+}
+.allScores__users_user:nth-child(6) ul li:first-child{
+    background:url(./assets/img/elvina_img.jpg) center 5%/cover no-repeat
+}
+.allScores__users_user:nth-child(7) ul li:first-child{
+    background:url(./assets/img/igoshin_img.jpg) center 1%/cover no-repeat
+}
+.allScores__users_user:nth-child(8) ul li:first-child{
+    background:url(./assets/img/ilina_img.jpg) 60% 5%/cover no-repeat
+}
+.allScores__users_user:nth-child(9) ul li:first-child{
+    background:url(./assets/img/vika_img.jpg) center 5%/cover no-repeat
+}
+.allScores__users_user:nth-child(10) ul li:first-child{
+    background:url(./assets/img/viola_img.jpg) 80% 5%/cover no-repeat
+}*/
+
+.queen {
+    background: url('../../assets/img/sabina_img.jpg') center center/cover no-repeat;
+}
+
+.bitmaker {
+    background: url('../../assets/img/marat_img.jpg') center center/cover no-repeat;
+}
+
+.penitrator2000 {
+	background: url('../../assets/img/nikolay_img.jpg') center 20%/cover no-repeat;
+}
+
+.less40 {
+    background:#c22d28;
+}
+
+.less40b {
+    border:2px solid #c22d28;
+}
+
+.beetwen4060 {
+    background:#db880b;
+}
+
+.beetwen4060b {
+    border:2px solid#db880b;
+}
+
+.beetwen6090 {
+    background:#93ca13;
+}
+
+.beetwen6090b {
+    border:2px solid #93ca13;
+}
+
+.more90 {
+    background:#4df08b;
+}
+
+.more90b {
+    border:2px solid #4df08b;
+}
+
+.progress {
+    transition: width 2s linear;
+    transition-delay: 1s;
+}
