@@ -23,4 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local Netlify folder
+<<<<<<< HEAD
 .netlify
+=======
+.netlify
+>>>>>>> 5afe3fce8aadb0ae021d980d4075c4de94c599fb
