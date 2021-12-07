@@ -7,6 +7,7 @@ import { selectLocalID } from '../../store/user';
 import TasksBlock from "../TasksBlock";
 import Modal from "../Modal";
 import AllScores from "../AllScores";
+import MafiaGame from "../MafiaGame";
 
 const MainPage = () => {
     const firebase = useContext(FireBaseContext);
@@ -18,6 +19,7 @@ const MainPage = () => {
     const [userdata, setUserdata] = useState(null);
     const [modalData, setModalData] = useState({});
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [isStartMafia, setIsStartMafia] = useState(true);
     const localID = useSelector(selectLocalID);
     
     /*
@@ -34,6 +36,8 @@ const MainPage = () => {
             setAllData(Object.entries(data))
             setUserdata(Object.entries(data[localID]['usersdata'])[0]);
         })
+
+        document.body.style.overflowY = "scroll";
     }, []);
 
     const changeStatus = (score, oldScore, oldKey, key) => {
@@ -168,6 +172,12 @@ const MainPage = () => {
         }
 
         width = userdata[1].score + "%";
+    }
+
+    if (isStartMafia) {
+        return (
+            <MafiaGame />
+        )
     }
     return (
         <div className="dd">

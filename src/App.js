@@ -10,7 +10,6 @@ import 'react-notifications/lib/notifications.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserAsync, selectUserLoading } from './store/user';
 import { useEffect } from 'react';
-import MafiaGame from './components/MafiaGame';
 
 const App = () => {
 
@@ -35,7 +34,6 @@ const App = () => {
                         <Route path="/login" component={LoginPage} />
                         <Route path="/" exact render={() => (<Redirect to="/game"/>)} />    
                         <PrivateRoute path="/game" component={MainPage} />
-                        <PrivateRoute path="/mafia" component={MafiaGame} />
                         <Route render={() => (
                                 <Redirect to="/404" />
                             )} />
