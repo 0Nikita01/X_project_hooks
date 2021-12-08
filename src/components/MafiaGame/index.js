@@ -12,8 +12,9 @@ const MafiaGame = () => {
     const [cardActive, setCardActive] = useState(false);
     const [isCardHidden, setCardHidden] = useState(false);
     const [isActiveSplashScreen, setIsActiveSplashScreen] = useState(true);
+    const [isStartGame, setIsStartGame] = useState(false);
     const splash = useRef(null);
-    
+    const splashStart = useRef(null);
 
     
 
@@ -39,6 +40,23 @@ const MafiaGame = () => {
             setTimeout(() => setCardHidden(!isCardHidden), 1200);
         }
         
+    }
+
+    const handleClickGame = () => {
+        showSplashStart();
+
+
+    }
+
+    const showSplashStart = () => {
+        splashStart.current.style.display = "flex";
+        setIsStartGame(prev => !prev);
+
+        setTimeout(() => {setIsStartGame(prev => !prev)}, 2000);
+
+        setTimeout(() => {
+            splashStart.current.style.display = "none";
+        }, 3050);
     }
     /*
     if (isActiveSplashScreen) {
@@ -82,10 +100,33 @@ const MafiaGame = () => {
                     </div>
                 </div>
             </div>
+            <div className={cn(s.splashStart, {[s.splashStart_active] : isStartGame})} ref={splashStart}>
+                <div className={s.splashStart__title}>Игра началась</div>
+            </div>
             <div className={s.gameBox}>
-                <div className={s.users}>
-                    
+                <div className={s.startScreen}>
+                    <div className={s.startScreen__title}>
+                        Ожидание игроков
+                    </div>
+                    <div className={s.startScreen__subtitle}>
+                        Игроков в комнате
+                    </div>
+                    <div className={s.startScreen__quantity}>
+                        <div className={s.startScreen__quantity__number}>
+                            10
+                        </div>
+                    </div>
+                    <div className={s.startScreen__actions}>
+                        <div className={s.startScreen__rools}>Правила</div>
+                        <div 
+                            className={s.startScreen__startGame}
+                            onClick={() => handleClickGame()}
+                        >
+                            Играть
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </section>
     )
