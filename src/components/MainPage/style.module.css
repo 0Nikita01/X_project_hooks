@@ -10,6 +10,14 @@
 	background: url('../../assets/img/nikolay_img.jpg') center 20%/cover no-repeat;
 }
 
+.ilina {
+    background: url('../../assets/img/ilina_img.jpg') center center/cover no-repeat;
+}
+
+.emilio {
+    background: url('../../assets/img/emil_img.jpg') center 10%/cover no-repeat;
+}
+
 .less40 {
     background:#c22d28;
 }

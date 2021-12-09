@@ -1,10 +1,20 @@
 {
-    "login" : "penitrator",
-    "name"     : "Николай",
+    "login" : "emil",
+    "name"     : "Эмиль",
     "scoreXP"  : "0",
     "score"    : "0",
     "status"   : "younger",
-    "avatar"   : "penitrator2000",
+    "avatar"   : "emilio",
+    "mafia"    : 
+    {
+        "host" : false,
+        "attachment" : false,
+        "won" : false,
+        "checked" : false,
+        "isReady" : false,
+        "faceUp" : false
+
+    },
     "tasks" :
     {
         "personal" : 
@@ -40,13 +50,13 @@
             {
                 "0" : "Task-1",
                 "1" : "Task-2",
-                "2" : "Task-3"
+                "2" : "Мафия"
             },
             "descr" :
             {
                 "0" : "Something Task-1",
                 "1" : "Something Task-2",
-                "2" : "Something Task-3"
+                "2" : "Выиграй в игре Мафия"
             },
             "status" :
             {

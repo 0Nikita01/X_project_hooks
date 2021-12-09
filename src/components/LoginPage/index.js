@@ -14,6 +14,7 @@ const loginSignupUser = async ({email, password, type}) => {
         body: JSON.stringify({
             email,
             password,
+            "expiresIn": "3600",
             returnSecureToken: true,
         })
     }
@@ -64,7 +65,6 @@ const LoginPage = () => {
                 }
             }
             if (props.type === 'login') {
-                console.log(responce.localId);
                 localStorage.setItem('idToken', responce.idToken);
                 NotificationManager.success("Successful");
                 dispatch(getUserUpdateAsync());

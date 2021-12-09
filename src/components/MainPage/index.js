@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import s from './style.module.css';
 import { NotificationManager } from 'react-notifications';
 import { FireBaseContext } from "../../context/firebaseContext";
@@ -19,8 +19,9 @@ const MainPage = () => {
     const [userdata, setUserdata] = useState(null);
     const [modalData, setModalData] = useState({});
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [isStartMafia, setIsStartMafia] = useState(true);
+    const [isStartMafia, setIsStartMafia] = useState(false);
     const localID = useSelector(selectLocalID);
+    const subheader = useRef(null);
     
     /*
     useEffect(() => {
@@ -36,7 +37,6 @@ const MainPage = () => {
             setAllData(Object.entries(data))
             setUserdata(Object.entries(data[localID]['usersdata'])[0]);
         })
-
         document.body.style.overflowY = "scroll";
     }, []);
 
@@ -72,19 +72,28 @@ const MainPage = () => {
         firebase.postData('status', oldKey, key, data, type, num);
     }
 
+    const setMafiaHost = (data, oldKey, key) => {
+        firebase.postData('setGameHost', oldKey, key, data);
+    }
+
     const handlerSubmitTask = (event, lock, title, key, descr, type) => {
         if (lock !== 'lock') {
             handleCloseModal();
+            document.body.style.overflowY = "hidden";
             let code = (lock === 'unlock') ? false : true;
             setModalData(() => {return {type: type, name: title, descrTask: descr, key: key, isCode: code, button: code ? 'send' : 'subscribe'}});
         }
     }
 
-    const handleSubmitModal = ({type, code, key, typeTask}) => {
+    const handleSubmitModal = ({type, code, key, typeTask, game}) => {
         handleCloseModal();
 
         if (type === 'subscribe') {
             changeTaskStatus('1', localID, userdata[0], typeTask, key);
+            if (game) {
+                setIsStartMafia(true);
+                setMafiaHost(true, localID, userdata[0]);
+            }
         }
         else if (type === 'send' && code === userdata[1].tasks[typeTask]['pas'][key]) {
             let score = String(Number(userdata[1].score) + 15);
@@ -109,15 +118,44 @@ const MainPage = () => {
     }
 
     const handleCloseModal = () => {
+        document.body.style.overflowY = "scroll";
         setIsOpenModal(prevState => !prevState);
     }
 
-    let menu = fmenu();
+    let menu = subheader.current;
     let html = document.getElementsByTagName('body')[0];
     html.onscroll = function()
     {
-        resizeHeader(menu, fmenu);
+        if (!isStartMafia)
+        {
+            resizeHeader(menu, subheader);
+        }
     }
+
+    function resizeHeader(elem, fmenu)
+{
+    if (elem == undefined)
+        elem = fmenu.current;
+    let coords = elem.getBoundingClientRect();
+    let header_inform = document.getElementsByClassName('header__information')[0];
+    let subheader = document.getElementsByClassName('subheader')[0];
+    let img = document.getElementsByClassName('header__information_img')[0];
+    if (coords.top < 320)
+    {
+        if (coords.top > 200)
+        {
+            img.style.width = (165 - (320 - coords.top)) + 'px';
+            img.style.height = (165 - (320 - coords.top)) + 'px';
+        }
+        else
+            header_inform.classList.add('header__information_halfhidden');
+    }
+    if (coords.top >= 320)
+    {
+        header_inform.classList.remove('header__information_halfhidden');
+    }
+        
+}
 
     useEffect(() => {
         setHGraph(change);
@@ -176,16 +214,22 @@ const MainPage = () => {
 
     if (isStartMafia) {
         return (
-            <MafiaGame />
+            <MafiaGame          
+                userdata={userdata}
+                localID={localID}
+                data={allData}
+                modalData={modalData}
+            />
         )
     }
     return (
         <div className="dd">
             <Modal 
                 isOpen={isOpenModal} 
-                props={modalData} 
-                onSubmit={handleSubmitModal}
+                props={modalData}        
                 onCloseModal={handleCloseModal}
+                typeModal={"functional"}
+                onSubmit={handleSubmitModal}
             />
             <header className="header">
                 <div className="container">
@@ -211,7 +255,7 @@ const MainPage = () => {
             </header>
             <section className="subheader">
                 <div className="container">
-                    <ul className="subheader__menu">
+                    <ul ref={subheader} className="subheader__menu">
                         <li onClick={(e) => openPage(e)} className="subheader__menu_item one">Holy graph</li>
                         <li onClick={(e) => openPage(e)} className="subheader__menu_item two">My score</li>
                         <li onClick={(e) => openPage(e)} className="subheader__menu_item three">All scores</li>
@@ -273,32 +317,3 @@ const MainPage = () => {
 
 export default MainPage;
 
-function resizeHeader(elem, fmenu)
-{
-    if (elem == undefined)
-        elem = fmenu();
-    let coords = elem.getBoundingClientRect();
-    let header_inform = document.getElementsByClassName('header__information')[0];
-    let subheader = document.getElementsByClassName('subheader')[0];
-    let img = document.getElementsByClassName('header__information_img')[0];
-    if (coords.top < 320)
-    {
-        if (coords.top > 200)
-        {
-            img.style.width = (165 - (320 - coords.top)) + 'px';
-            img.style.height = (165 - (320 - coords.top)) + 'px';
-        }
-        else
-            header_inform.classList.add('header__information_halfhidden');
-    }
-    if (coords.top >= 320)
-    {
-        header_inform.classList.remove('header__information_halfhidden');
-    }
-        
-}
-
-function fmenu()
-{
-    return document.getElementsByClassName('subheader__menu')[0];
-}

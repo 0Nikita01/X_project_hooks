@@ -17,6 +17,7 @@ function resizeHeader(elem, fmenu)
     if (elem == undefined)
         elem = fmenu();
     let coords = elem.getBoundingClientRect();
+    console.log(coords);
     let header_inform = document.getElementsByClassName('header__information')[0];
     let subheader = document.getElementsByClassName('subheader')[0];
     let img = document.getElementsByClassName('header__information_img')[0];

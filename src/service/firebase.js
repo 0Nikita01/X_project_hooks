@@ -39,6 +39,14 @@ class Firebase {
         if (typeAction === 'playerStatus') {
             this.database.ref(`data/${oldKey}/usersdata/${key}/status`).set(data);
         }
+
+        if (typeAction === 'setGameHost') {
+            this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/host`).set(data);
+        }
+        
+        if (typeAction === 'setGameChecked') {
+            this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/checked`).set(data);
+        }
 	}
 
     getDataOnce = async (key) => {

@@ -37,8 +37,8 @@ const AllScores = ({left, allData, progress}) => {
         }
     }
     const scorePage = allData.map((item, key) => {
+        /*console.log(Object.entries(item[1]['usersdata']));*/
         const  shortItem = Object.entries(item[1]['usersdata'])[0][1];
-        console.log(shortItem);
         return (
             <li className="allScores__users_user" key={shortItem.login}>
             <ul className="allScores__users_user_propeties">
