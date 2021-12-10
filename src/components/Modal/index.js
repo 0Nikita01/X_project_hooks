@@ -20,6 +20,9 @@ const Modal = ({isOpen, props, onCloseModal, typeModal, onSubmit = false}) => {
         case('subscribe') :
             buttonAction = 'Начать';
             break;
+        case('join') :
+            buttonAction = 'Зайти';
+            break;
         default :
             buttonAction = 'Action';
     }

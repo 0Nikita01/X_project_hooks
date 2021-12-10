@@ -6,10 +6,14 @@ import { FireBaseContext } from "../../context/firebaseContext";
 import { useSelector } from "react-redux";
 import user, { selectLocalID } from '../../store/user';
 import cardFront from '../../assets/img/front_side.png';
-import backFront from '../../assets/img/back_cop.png';
+import copCard from '../../assets/img/back_cop.png';
+import mafiaCard from '../../assets/img/back_mafia.png';
+import docCard from '../../assets/img/back_doc.png';
+import putanaCard from '../../assets/img/back_putana.png';
+import civCard from '../../assets/img/back_civilian.png';
 import Modal from "../Modal";
 
-const MafiaGame = ({userdata, localID, data, modalData}) => {
+const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const firebase = useContext(FireBaseContext);
     const [cardActive, setCardActive] = useState(false);
     const [isCardHidden, setCardHidden] = useState(false);
@@ -19,8 +23,37 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
     const [activeGame, setActiveGame] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(false);
+    const [timer, setTimer] = useState(-1);
+    const [timesOfDay, setTimesOfDay] = useState(null);
+    const [isHost, setIsHost] = useState(false);
+    const [role, setRole] = useState(null);
+    const [gameAvatar, setGameAvatar] = useState(null);
     const splash = useRef(null);
     const splashStart = useRef(null);
+
+    const gameTimer = (time) => {
+        const timer = setInterval(() => {
+            if (time < 0) {
+                clearInterval(timer);
+            }
+
+            setTimer(time--);
+        }, 1000)
+    }
+
+    useEffect(() => {
+        if (userdata[1].mafia.attachment) {
+            setActiveGame(true);
+            showSplashStart();
+        }
+    }, [userdata[1].mafia.attachment])
+
+    useEffect(() => {
+        if (timer === 0) {
+            setCardHidden(prevState => !prevState);
+        }
+        
+    }, [timer]);
 
     useEffect(() => {
         let count = 0;
@@ -34,6 +67,10 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
     }, [data]);
 
     useEffect(() => {
+        setAvatar();
+    }, [userdata]);
+
+    useEffect(() => {
 
     }, [kolReadyUsers])
 
@@ -45,6 +82,108 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
             splash.current.style.display = "none";
         }, 3050);
     }, []);
+
+    useEffect(() => {
+        if (timesOfDay === 'starting') {
+            console.log('starting');
+            if (isHost === true) {
+               distributeCards(kolReadyUsers);
+            }
+        }
+    }, [timesOfDay]);
+
+    const nextGameProcess = () => {
+        if (timesOfDay === 'starting') {
+
+        }
+    }
+
+    const distributeCards = (kol) => {
+        let count = 0;
+        let arrayCategories = getCategoriesArray(kol);
+        arrayCategories = getRandomQueue(kol, arrayCategories);
+        
+        data.forEach((item, key) => {
+            const oldKey = item[0];
+            const  newKey = Object.entries(item[1]['usersdata'])[0][0];
+            setUserCardToFirebase(arrayCategories[count], oldKey, newKey);
+            count++;
+        });
+        console.log(arrayCategories);
+    }
+
+    const getCategoriesArray = (kol) => {
+        let arr = [];
+        let Mafia = Math.round(kol / 3.5);
+        let Cop = 0, Putana = 0, Doc = 0;
+
+        if (kol === 5) Cop = 1;
+
+        if (kol === 6) {
+            Cop = 1;
+            Doc = 1;
+        }
+
+        if (kol > 6) {
+            Cop = 1;
+            Doc = 1;
+            Putana = 1;
+        }
+
+        while (kol > 0) {
+            if (Mafia > 0) {
+                arr.push('Mafia');
+                --Mafia;
+                --kol;
+            }
+            if (Cop > 0) {
+                arr.push('Cop');
+                --Cop;
+                --kol;
+            }
+            if (Doc > 0) {
+                arr.push('Doc');
+                --Doc;
+                --kol;
+            }
+            if (Putana > 0) {
+                arr.push('Putana');
+                --Putana;
+                --kol;
+            }
+            if (kol > 0) {
+                arr.push('Civ');
+                --kol;
+            }
+        }
+        return (arr);
+    }
+
+    const getRandomQueue = (kol, arrCateg) => {
+        let num = 0;
+        let helpElem = '';
+        let newArr = [];
+
+        while (arrCateg[0] !== undefined) {
+            num = Math.floor(Math.random() * kol);
+
+            if (num !== 0) {
+                helpElem = arrCateg[0];
+                arrCateg[0] = arrCateg[num];
+                arrCateg[num] = helpElem;
+            }
+
+            newArr.push(arrCateg[0]);
+            arrCateg.shift();
+            kol--;
+        }
+
+        return (newArr);
+    }
+
+    const setUserCardToFirebase = (data, oldKey, key) => {
+        firebase.postData('setUserCard', oldKey, key, data);
+    }
 
     const setMafiaChecked = (data, oldKey, key) => {
         firebase.postData('setGameChecked', oldKey, key, data);
@@ -68,16 +207,24 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
     }
 
     const handleClickGame = () => {
+        const userIsHost = userdata[1].mafia.host;
 
-        if (kolReadyUsers > 4) 
-        {
-            showSplashStart();
-            setActiveGame(true);
+        if (!userIsHost) {
+            handleExit();
         }
+        if (userIsHost) {
+            if (kolReadyUsers > 4) 
+            {
+                setActiveGame(true);      
+                setIsHost(userdata[1].mafia.host);
+                setTimesOfDay('starting');
+            }
+        }
+
         
-
-
     }
+
+
 
     const showSplashStart = () => {
         splashStart.current.style.display = "flex";
@@ -101,7 +248,6 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
     const handleClickUser = (event) => {
         let user = "";
         const id = event.target.id;
-        console.log(id);
         if (id) {
             data.forEach((item,index)=>{
                 if (item[0] === id) {
@@ -120,6 +266,38 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
             }
         }
         
+    }
+
+    const setAvatar = () => {
+        let role = userdata[1].mafia.attachment;
+        let avatar;
+        switch (role) {
+            case 'Mafia':
+                avatar = mafiaCard;
+                role = 'Мафия';
+                break;
+            case 'Cop':
+                avatar = copCard;
+                role = 'Шериф';
+                break;
+            case 'Doc':
+                avatar = docCard;
+                role = 'Доктор';
+                break;
+            case 'Putana':
+                avatar = putanaCard;
+                role = 'Путана';
+                break;
+            case 'Civ':
+                avatar = civCard;
+                role = 'Мирный';
+                break;
+            default:
+                break;
+        }
+
+        setRole(role);
+        setGameAvatar(avatar);
     }
 
 
@@ -161,11 +339,16 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
             </div>
             <div className={s.box}>
                 <div className={s.changeCardBlock}>
+                <div className={cn(s.timer)}>
+                    
+                    {timer % 60 >= 0 ? (timer - (timer % 60)) / 60 : 0}:{timer > 0 && timer % 60 < 10 ? 0 : null}{timer >= 0 ? timer % 60 : 0}{timer <= 0 ? 0 : null}
+                </div>
                     <div className={s.changeCardButton} onClick={() => onMoveCard()}>
                         {
                             isCardHidden ? "Open" : "Close"
                         }
                     </div>
+                    
                 </div>
                 <div className={cn(s.cardWrapeer, {[s.cardWrapeerHidden] : isCardHidden})}>
                     <div className={cn(s.cardContainer, {[s.cardContainerHidden] : isCardHidden})}>
@@ -177,10 +360,10 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
                             </div>
                             <div className={s.back}>
                                 <div className={s.backImg}>
-                                    <img src={backFront} alt="back"/>
+                                    <img src={gameAvatar} alt="back"/>
                                 </div>
                                 <div className={s.descr}>
-                                    Шериф
+                                    {role}
                                 </div>
                             </div>
                         </div>
@@ -209,7 +392,7 @@ const MafiaGame = ({userdata, localID, data, modalData}) => {
                             className={cn(s.startScreen__startGame, {[s.startScreen__startGame__unblock] : kolReadyUsers > 4})}
                             onClick={() => handleClickGame()}
                         >
-                            Играть
+                            {userdata[1].mafia.host ? 'Играть' : 'Выйти'}
                         </div>
                     </div>
                 </div>

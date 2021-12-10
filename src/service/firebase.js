@@ -47,6 +47,14 @@ class Firebase {
         if (typeAction === 'setGameChecked') {
             this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/checked`).set(data);
         }
+
+        if (typeAction === 'setUserCard') {
+            this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/attachment`).set(data);
+        }
+        if (typeAction === 'setGameReady') {
+            this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/isReady`).set(data);
+        }
+        
 	}
 
     getDataOnce = async (key) => {

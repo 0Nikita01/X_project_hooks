@@ -38,6 +38,7 @@ export const getUserUpdateAsync = () => async (dispatch) => {
         };
 
         const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDYV_WEsMNCAD_FFuPvivgEQ1reZuSYXkI', requestOptions).then(res => res.json());
+        console.log(response);
         if (response.hasOwnProperty('error')) {
             localStorage.removeItem('idToken');
             dispatch(removeUser());

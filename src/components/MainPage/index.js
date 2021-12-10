@@ -20,6 +20,7 @@ const MainPage = () => {
     const [modalData, setModalData] = useState({});
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isStartMafia, setIsStartMafia] = useState(false);
+    const [isRoomExists, setIsRoomExists] = useState(false);
     const localID = useSelector(selectLocalID);
     const subheader = useRef(null);
     
@@ -31,6 +32,19 @@ const MainPage = () => {
         }
         func();
     }, []);*/
+
+    useEffect(() => {
+        if (allData) {
+            let hasRoom = false;
+            allData.forEach((item,index)=>{
+                const shortItem = Object.entries(item[1]['usersdata'])[0][1];
+                if (shortItem.mafia.host) {
+                    hasRoom = true;
+                }
+            });
+            setIsRoomExists(hasRoom);
+        }
+    }, [allData]);
 
     useEffect(() => {
         firebase.getDataSocket(localID, (data) => {
@@ -76,12 +90,22 @@ const MainPage = () => {
         firebase.postData('setGameHost', oldKey, key, data);
     }
 
+    const setMafiaReady = (data, oldKey, key) => {
+        firebase.postData('setGameReady', oldKey, key, data);
+    }
+
     const handlerSubmitTask = (event, lock, title, key, descr, type) => {
         if (lock !== 'lock') {
             handleCloseModal();
             document.body.style.overflowY = "hidden";
             let code = (lock === 'unlock') ? false : true;
-            setModalData(() => {return {type: type, name: title, descrTask: descr, key: key, isCode: code, button: code ? 'send' : 'subscribe'}});
+            let action = '';
+            
+            if (!code && !isRoomExists) action = 'subscribe';
+            if (!code && isRoomExists) action = 'join';
+            if (code) action = 'send';
+            console.log(isRoomExists);
+            setModalData(() => {return {type: type, name: title, descrTask: descr, key: key, isCode: code, button: action}});
         }
     }
 
@@ -93,6 +117,7 @@ const MainPage = () => {
             if (game) {
                 setIsStartMafia(true);
                 setMafiaHost(true, localID, userdata[0]);
+                setMafiaReady(true, localID, userdata[0]);
             }
         }
         else if (type === 'send' && code === userdata[1].tasks[typeTask]['pas'][key]) {
@@ -101,6 +126,13 @@ const MainPage = () => {
             changeTaskStatus('2', localID, userdata[0], typeTask, key);
             changeScore(score, localID, userdata[0]);
             changeStatus(Number(score), Number(userdata[1].score), localID, userdata[0]);
+        }
+        else if (type === 'join') {
+            changeTaskStatus('1', localID, userdata[0], typeTask, key);
+            if (game) {
+                setIsStartMafia(true);
+                setMafiaReady(true, localID, userdata[0]);
+            }
         }
         else {
             NotificationManager.error('Неверный код', "Wrong!");
@@ -212,6 +244,11 @@ const MainPage = () => {
         width = userdata[1].score + "%";
     }
 
+    const handlerExitMafiaGame = () => {
+        setIsStartMafia(false);
+        document.body.style.overflowY = "scroll";
+    }
+
     if (isStartMafia) {
         return (
             <MafiaGame          
@@ -219,6 +256,7 @@ const MainPage = () => {
                 localID={localID}
                 data={allData}
                 modalData={modalData}
+                handleExit={handlerExitMafiaGame}
             />
         )
     }
