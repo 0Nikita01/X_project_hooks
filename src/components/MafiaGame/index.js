@@ -12,6 +12,7 @@ import docCard from '../../assets/img/back_doc.png';
 import putanaCard from '../../assets/img/back_putana.png';
 import civCard from '../../assets/img/back_civilian.png';
 import Modal from "../Modal";
+import SplashScreen from '../SplashScreen';
 
 const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const firebase = useContext(FireBaseContext);
@@ -28,6 +29,9 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const [isHost, setIsHost] = useState(false);
     const [role, setRole] = useState(null);
     const [gameAvatar, setGameAvatar] = useState(null);
+
+    const [showSplash, setShowSplash] = useState(false);
+
     const splash = useRef(null);
     const splashStart = useRef(null);
 
@@ -42,18 +46,78 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     }
 
     useEffect(() => {
-        if (userdata[1].mafia.attachment) {
+        if (userdata[1].mafia.attachment && userdata[1].mafia.host === false) {
             setActiveGame(true);
             showSplashStart();
+            setTimesOfDay('starting');
         }
     }, [userdata[1].mafia.attachment])
 
     useEffect(() => {
         if (timer === 0) {
-            setCardHidden(prevState => !prevState);
+            if (timesOfDay === 'starting') {
+                setTimesOfDay('mafia');
+                gameTimer(10);
+            }
+            if (timesOfDay === 'mafia') {
+                setTimesOfDay('cop');
+                gameTimer(10);
+            }
+            if (timesOfDay === 'cop') {
+                gameTimer(10);
+                setTimesOfDay('doc');
+            }
+            if (timesOfDay === 'doc') {
+                gameTimer(10);
+                setTimesOfDay('putana');
+            }
+            if (timesOfDay === 'putana') {
+                /*
+                gameTimer(10);
+                setTimesOfDay('civilian');*/
+            }
+            if (timesOfDay === 'civilian') {
+                /*
+                gameTimer(10);
+                setTimesOfDay('mafia');*/
+            }
         }
         
+
     }, [timer]);
+
+    useEffect(() => {
+        if (timesOfDay === 'starting') {
+            console.log('starting');
+            if (isHost === true) {
+               distributeCards(kolReadyUsers);
+            }
+              
+            gameTimer(10);
+        }
+        if (timesOfDay === 'mafia') {
+            console.log('letsMafia');
+            setShowSplash(prevState => !prevState);
+        }
+        if (timesOfDay === 'cop') {
+            console.log('letsCop');
+            setShowSplash(prevState => !prevState);
+        }
+        if (timesOfDay === 'doc') {
+            console.log('letsDoc');
+            setShowSplash(prevState => !prevState);
+            
+        }
+        if (timesOfDay === 'putana') {
+            console.log('letsPutana');
+            setShowSplash(prevState => !prevState);
+        }
+        if (timesOfDay === 'civilian') {
+            console.log('letsCivilian');
+            setShowSplash(prevState => !prevState);
+        }
+
+    }, [timesOfDay]);
 
     useEffect(() => {
         let count = 0;
@@ -83,14 +147,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         }, 3050);
     }, []);
 
-    useEffect(() => {
-        if (timesOfDay === 'starting') {
-            console.log('starting');
-            if (isHost === true) {
-               distributeCards(kolReadyUsers);
-            }
-        }
-    }, [timesOfDay]);
+    
 
     const nextGameProcess = () => {
         if (timesOfDay === 'starting') {
@@ -373,6 +430,10 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
             <div className={cn(s.splashStart, {[s.splashStart_active] : isStartGame})} ref={splashStart}>
                 <div className={s.splashStart__title}>Игра началась</div>
             </div>
+            <SplashScreen 
+                text={'text here...'}
+                isShow={showSplash}
+            />
             <div className={s.gameBox}>
                 <div className={cn(s.startScreen, {[s.startScreen_block] : activeGame})}>
                     <div className={s.startScreen__title}>
