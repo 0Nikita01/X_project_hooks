@@ -31,6 +31,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const [gameAvatar, setGameAvatar] = useState(null);
 
     const [showSplash, setShowSplash] = useState(false);
+    const [splashText, setSplashText] = useState(null);
 
     const splash = useRef(null);
     const splashStart = useRef(null);
@@ -44,7 +45,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
             setTimer(time--);
         }, 1000)
     }
-
+/*
     useEffect(() => {
         if (userdata[1].mafia.attachment && userdata[1].mafia.host === false) {
             setActiveGame(true);
@@ -52,34 +53,57 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
             setTimesOfDay('starting');
         }
     }, [userdata[1].mafia.attachment])
+*/
+    useEffect(() => {
+        console.log('startTimer = ' + userdata[1].mafia.startTimer);
+        if (userdata[1].mafia.startTimer) {
+            let delay = 0;
+            if (userdata[1].mafia.host === true) {
+                delay = 150;
+            }
+            setTimeout(() => {
+                console.log('call timer');
+                setActiveGame(true);
+                showSplashStart();
+                setTimesOfDay('starting');
+            }, delay);
+            
+        }
+    }, [userdata[1].mafia.startTimer]);
 
     useEffect(() => {
         if (timer === 0) {
             if (timesOfDay === 'starting') {
-                setTimesOfDay('mafia');
+                
+                setTimesOfDay('Mafia');
+                //gameTimer(10);
+                
+            }
+            if (timesOfDay === 'Mafia') {
+                clearCheckedField(selectedUser);
+                setTimesOfDay('Cop');
                 gameTimer(10);
             }
-            if (timesOfDay === 'mafia') {
-                setTimesOfDay('cop');
+            if (timesOfDay === 'Cop') {
+                clearCheckedField(selectedUser);
                 gameTimer(10);
+                setTimesOfDay('Doc');
             }
-            if (timesOfDay === 'cop') {
+            if (timesOfDay === 'Doc') {
+                clearCheckedField(selectedUser);
                 gameTimer(10);
-                setTimesOfDay('doc');
+                setTimesOfDay('Putana');
             }
-            if (timesOfDay === 'doc') {
+            if (timesOfDay === 'Putana') {
+                clearCheckedField(selectedUser);
                 gameTimer(10);
-                setTimesOfDay('putana');
+                setTimesOfDay('Civ');
             }
-            if (timesOfDay === 'putana') {
-                /*
+            if (timesOfDay === 'Civ') {
+                clearCheckedField(selectedUser);
+                
                 gameTimer(10);
-                setTimesOfDay('civilian');*/
-            }
-            if (timesOfDay === 'civilian') {
-                /*
-                gameTimer(10);
-                setTimesOfDay('mafia');*/
+                setTimesOfDay('Mafia');
             }
         }
         
@@ -95,26 +119,28 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
               
             gameTimer(10);
         }
-        if (timesOfDay === 'mafia') {
+        if (timesOfDay === 'Mafia') {
             console.log('letsMafia');
-            setShowSplash(prevState => !prevState);
+            showSplashScreen('Ход Мафии');
+
+
         }
-        if (timesOfDay === 'cop') {
+        if (timesOfDay === 'Cop') {
             console.log('letsCop');
-            setShowSplash(prevState => !prevState);
+            showSplashScreen('Ход Шерифа');
         }
-        if (timesOfDay === 'doc') {
+        if (timesOfDay === 'Doc') {
             console.log('letsDoc');
-            setShowSplash(prevState => !prevState);
+            showSplashScreen('Ход Доктора')
             
         }
-        if (timesOfDay === 'putana') {
+        if (timesOfDay === 'Putana') {
             console.log('letsPutana');
-            setShowSplash(prevState => !prevState);
+            showSplashScreen('Ход Путаны')
         }
-        if (timesOfDay === 'civilian') {
+        if (timesOfDay === 'Civ') {
             console.log('letsCivilian');
-            setShowSplash(prevState => !prevState);
+            showSplashScreen('Город просыпается');
         }
 
     }, [timesOfDay]);
@@ -147,7 +173,16 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         }, 3050);
     }, []);
 
-    
+    const clearCheckedField = (user) => {
+        if (user && user !== {} && timesOfDay === userdata[1].mafia.attachment) {
+            setMafiaChecked(false, user.oldkey, user.newkey);
+        }
+    }
+
+    const showSplashScreen = (text) => {
+        setShowSplash(prevState => !prevState);
+        setSplashText(text);
+    }
 
     const nextGameProcess = () => {
         if (timesOfDay === 'starting') {
@@ -238,12 +273,20 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         return (newArr);
     }
 
+    const setStartTimerToFirebase = (value, oldKey, key) => {
+        firebase.postData('setStartTimer', oldKey, key, value, false, false, data);
+    }
+
     const setUserCardToFirebase = (data, oldKey, key) => {
         firebase.postData('setUserCard', oldKey, key, data);
     }
 
     const setMafiaChecked = (data, oldKey, key) => {
         firebase.postData('setGameChecked', oldKey, key, data);
+    }
+
+    const setCurentTarget = (data, oldKey, key) => {/*По нажатию добалять в базу цель*/
+        firebase.postData('setCurentTarget', oldKey, key, data);
     }
 
     const onToggleCard = () => {
@@ -272,9 +315,9 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         if (userIsHost) {
             if (kolReadyUsers > 4) 
             {
-                setActiveGame(true);      
+                setActiveGame(true);
                 setIsHost(userdata[1].mafia.host);
-                setTimesOfDay('starting');
+                setStartTimerToFirebase(true, localID, userdata[0]);
             }
         }
 
@@ -305,7 +348,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const handleClickUser = (event) => {
         let user = "";
         const id = event.target.id;
-        if (id) {
+        if (id && timesOfDay === userdata[1].mafia.attachment) {
             data.forEach((item,index)=>{
                 if (item[0] === id) {
                     user = Object.entries(item[1]['usersdata'])[0][0];
@@ -357,6 +400,17 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         setGameAvatar(avatar);
     }
 
+    const handleUserAction = () => {
+        const user = userdata[1].mafia.attachment;
+        if (timesOfDay === user) {
+            console.log(timesOfDay + ' made a move');
+
+            if (user === 'Mafia' && selectedUser) {
+
+            }
+        }
+    }
+
 
     let allUsers = data.map((item, key) => {
         const  shortItem = Object.entries(item[1]['usersdata'])[0][1];
@@ -365,7 +419,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
             return (
                 <li 
                     id={item[0]} 
-                    className={cn(s.usersList_Item, s[shortItem.avatar], {[s.usersList_Item_checked] : shortItem.mafia.checked})} 
+                    className={cn(s.usersList_Item, s[shortItem.avatar], {[s.usersList_Item_checked] : shortItem.mafia.checked && (timesOfDay === userdata[1].mafia.attachment)})} 
                     key={item[0]}>
                     
                 </li>
@@ -431,7 +485,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
                 <div className={s.splashStart__title}>Игра началась</div>
             </div>
             <SplashScreen 
-                text={'text here...'}
+                text={splashText}
                 isShow={showSplash}
             />
             <div className={s.gameBox}>
@@ -462,7 +516,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
                         {allUsers}
                     </ul>
                     <div className={s.userActionBlock}>
-                        <div className={s.userAction}></div>
+                        <div className={s.userAction} onClick={() => handleUserAction()}></div>
                     </div>
                 </div>
             </div>

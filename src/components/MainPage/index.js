@@ -52,6 +52,7 @@ const MainPage = () => {
             setUserdata(Object.entries(data[localID]['usersdata'])[0]);
         })
         document.body.style.overflowY = "scroll";
+       
     }, []);
 
     const changeStatus = (score, oldScore, oldKey, key) => {
@@ -92,6 +93,10 @@ const MainPage = () => {
 
     const setMafiaReady = (data, oldKey, key) => {
         firebase.postData('setGameReady', oldKey, key, data);
+    }
+
+    const resetMafiaData = (oldKey, key) => {
+        firebase.postData('resetMafiaData', oldKey, key);
     }
 
     const handlerSubmitTask = (event, lock, title, key, descr, type) => {
@@ -312,6 +317,7 @@ const MainPage = () => {
                                         <option value="intellectual">Intellectual</option>
                                     </select>
                                 </form>
+                                <div className={s.resetData} onClick={() => resetMafiaData(localID, userdata[0])}>reset</div>
                             </div> 
                             <TasksBlock data={userdata[1].tasks} onSubmitTask={handlerSubmitTask}/>
                         </div>

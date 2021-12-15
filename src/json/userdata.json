@@ -12,7 +12,8 @@
         "won" : false,
         "checked" : false,
         "isReady" : false,
-        "faceUp" : false
+        "faceUp" : false,
+        "startTimer" :  false
 
     },
     "tasks" :

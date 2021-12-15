@@ -318,7 +318,7 @@
     height: 15vh;
     border: 2px solid #FFF;
     border-radius: 100%;
-    background: url('../../assets/img/mafiaAction.png') center center no-repeat, #D4D4D4;
+    background: url('../../assets/img/mafiaAction.svg') center center no-repeat, #D4D4D4;
     margin-top: calc(20vh - 160px);
     max-height: 110px;
     max-width: 110px;

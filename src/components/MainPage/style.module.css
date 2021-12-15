@@ -54,3 +54,10 @@
     transition: width 2s linear;
     transition-delay: 1s;
 }
+
+.resetData {
+    width: 180px;
+    margin: 0 auto;
+    padding: 10px;
+    background:#db880b;
+}

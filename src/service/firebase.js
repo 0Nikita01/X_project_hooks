@@ -26,7 +26,7 @@ class Firebase {
         })
     }
 
-    postData = (typeAction, oldKey, key, data, type = false, number = false) => {
+    postData = (typeAction, oldKey, key, data, type = false, number = false, allUsers = {}) => {
         
         if (typeAction === 'status') {
             this.database.ref(`data/${oldKey}/usersdata/${key}/tasks/${type}/status/${number}`).set(data);
@@ -54,7 +54,28 @@ class Firebase {
         if (typeAction === 'setGameReady') {
             this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/isReady`).set(data);
         }
+        if (typeAction === 'setCurentTarget') {
+            this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/target`).set(data);
+        }
         
+        if (typeAction === 'setStartTimer') {
+
+            allUsers.forEach((item,index)=>{
+                const id = Object.entries(item[1]['usersdata'])[0][0];
+                this.database.ref(`data/${item[0]}/usersdata/${id}/mafia/startTimer`).set(data);
+            })
+            
+        }
+        if (typeAction === 'resetMafiaData') {
+            const arr = ['attachment', 'checked', 'faceUp', 'host', 'isReady', 'won', 'startTimer', 'offline', 'shortTimer'];
+
+            console.log("call resetMafiaData");
+            
+            for (let i = 0; i < arr.length; i++) {
+                this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/${arr[i]}`).set(false);
+            }
+            this.database.ref(`data/${oldKey}/usersdata/${key}/tasks/common/status/2`).set("0");
+        }
 	}
 
     getDataOnce = async (key) => {
