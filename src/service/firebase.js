@@ -57,6 +57,13 @@ class Firebase {
         if (typeAction === 'setCurentTarget') {
             this.database.ref(`data/${oldKey}/usersdata/${key}/mafia/target`).set(data);
         }
+        if (typeAction === 'setShortTimer') {
+            
+            allUsers.forEach((item,index)=>{
+                const id = Object.entries(item[1]['usersdata'])[0][0];
+                this.database.ref(`data/${item[0]}/usersdata/${id}/mafia/shortTimer`).set(data);
+            })
+        }
         
         if (typeAction === 'setStartTimer') {
 
@@ -67,7 +74,7 @@ class Firebase {
             
         }
         if (typeAction === 'resetMafiaData') {
-            const arr = ['attachment', 'checked', 'faceUp', 'host', 'isReady', 'won', 'startTimer', 'offline', 'shortTimer'];
+            const arr = ['attachment', 'checked', 'faceUp', 'host', 'isReady', 'won', 'startTimer', 'offline', 'shortTimer', 'target'];
 
             console.log("call resetMafiaData");
             

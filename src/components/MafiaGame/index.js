@@ -24,7 +24,9 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
     const [activeGame, setActiveGame] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(false);
+    const [highlight, setHighlight] = useState(null);
     const [timer, setTimer] = useState(-1);
+    const [cutTimer, setCutTimer] = useState(false);
     const [timesOfDay, setTimesOfDay] = useState(null);
     const [isHost, setIsHost] = useState(false);
     const [role, setRole] = useState(null);
@@ -40,6 +42,11 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         const timer = setInterval(() => {
             if (time < 0) {
                 clearInterval(timer);
+            }
+
+            if (cutTimer) {
+                time = 5;
+                setCutTimer(false);
             }
 
             setTimer(time--);
@@ -76,17 +83,17 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
             if (timesOfDay === 'starting') {
                 
                 setTimesOfDay('Mafia');
-                //gameTimer(10);
+                gameTimer(30);
                 
             }
             if (timesOfDay === 'Mafia') {
                 clearCheckedField(selectedUser);
                 setTimesOfDay('Cop');
-                gameTimer(10);
+                gameTimer(30);
             }
             if (timesOfDay === 'Cop') {
                 clearCheckedField(selectedUser);
-                gameTimer(10);
+                //gameTimer(10);
                 setTimesOfDay('Doc');
             }
             if (timesOfDay === 'Doc') {
@@ -194,6 +201,7 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         let count = 0;
         let arrayCategories = getCategoriesArray(kol);
         arrayCategories = getRandomQueue(kol, arrayCategories);
+        arrayCategories = ['Civ', 'Mafia', 'Civ', 'Mafia', 'Civ'];
         
         data.forEach((item, key) => {
             const oldKey = item[0];
@@ -289,6 +297,10 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         firebase.postData('setCurentTarget', oldKey, key, data);
     }
 
+    const setShortTimer = (value, oldKey, key) => {
+        firebase.postData('setShortTimer', oldKey, key, value, false, false, data);
+    }
+
     const onToggleCard = () => {
         if (activeGame) {
             setCardActive(!cardActive);
@@ -356,12 +368,9 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
                 }
             })
             if (selectedUser) {
-                setMafiaChecked(false, selectedUser.oldkey, selectedUser.newkey);
-                setMafiaChecked(true, id, user);
                 setSelectedUser({oldkey: id, newkey: user});
             }
             else {
-                setMafiaChecked(true, id, user);
                 setSelectedUser({oldkey: id, newkey: user});
             }
         }
@@ -400,28 +409,71 @@ const MafiaGame = ({userdata, localID, data, modalData, handleExit}) => {
         setGameAvatar(avatar);
     }
 
+    const isAllSelectTargets = () => {
+        let isAll = true;
+        let tar = {newkey: '', oldkey: ''}
+        data.forEach(item => {
+            const shortItem = Object.entries(item[1]['usersdata'])[0][1];
+            if (shortItem.mafia.attachment === 'Mafia' && shortItem.mafia.target === false) {
+                isAll = false;
+            } else if (shortItem.mafia.attachment === 'Mafia') {
+                if (tar.oldkey === '') {
+                    tar.newkey = shortItem.mafia.target.newkey;
+                    tar.oldkey = shortItem.mafia.target.oldkey;
+                }
+                if (shortItem.mafia.target.oldkey !== tar.oldkey) {
+                    isAll = false;
+                }
+            }
+        });
+        return (isAll);
+    }
+
+    useEffect(() => {
+        if (userdata[1].mafia.shortTimer) {
+            setCutTimer(true);
+            
+        }
+    }, [userdata[1].mafia.shortTimer]);
+
+    useEffect(() => {
+            const user = userdata[1].mafia.attachment;
+            if (user === timesOfDay && userdata[1].mafia.target) {
+                console.log(isAllSelectTargets());
+                if(isAllSelectTargets()) {
+                    setShortTimer(true, localID, userdata[0]);
+                    setShortTimer(false, localID, userdata[0]);
+                }
+            }
+    }, [userdata[1].mafia.target]);
+
     const handleUserAction = () => {
         const user = userdata[1].mafia.attachment;
         if (timesOfDay === user) {
             console.log(timesOfDay + ' made a move');
 
             if (user === 'Mafia' && selectedUser) {
-
+                setCurentTarget(selectedUser, localID, userdata[0]);
+                
             }
         }
     }
 
+    const handleHighLightUser = (index) => {
+        setHighlight(index);
+    }
 
-    let allUsers = data.map((item, key) => {
+    let allUsers = data.map((item, index) => {
         const  shortItem = Object.entries(item[1]['usersdata'])[0][1];
         if (item[0] !== localID)
         {
             return (
                 <li 
                     id={item[0]} 
-                    className={cn(s.usersList_Item, s[shortItem.avatar], {[s.usersList_Item_checked] : shortItem.mafia.checked && (timesOfDay === userdata[1].mafia.attachment)})} 
-                    key={item[0]}>
-                    
+                    className={cn(s.usersList_Item, s[shortItem.avatar], {[s.usersList_Item_checked] : highlight === index})} 
+                    key={item[0]}
+                    onClick={() => handleHighLightUser(index)}
+                    >
                 </li>
             )
         } 
